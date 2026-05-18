@@ -359,7 +359,8 @@ export function SafeSphereDashboard() {
 
       const json = await readAuditResponse(res);
       if (!res.ok || "error" in json) {
-        throw new Error("error" in json ? json.error : "Audit failed");
+        const errorMessage = "error" in json && typeof json.error === "string" ? json.error : "Audit failed";
+        throw new Error(errorMessage);
       }
 
       setAudit(json);
