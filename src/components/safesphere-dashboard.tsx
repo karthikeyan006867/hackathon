@@ -107,6 +107,88 @@ function buildReportMarkdown(result: ApiAuditResult, sourceFile: string, mode: s
   return lines.join("\n");
 }
 
+async function convertVideoToFrameFile(videoFile: File): Promise<File> {
+  const objectUrl = URL.createObjectURL(videoFile);
+
+  try {
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.muted = true;
+    video.playsInline = true;
+    video.src = objectUrl;
+
+    await new Promise<void>((resolve, reject) => {
+      const onLoadedMetadata = () => {
+        video.removeEventListener("loadedmetadata", onLoadedMetadata);
+        video.removeEventListener("error", onError);
+        resolve();
+      };
+      const onError = () => {
+        video.removeEventListener("loadedmetadata", onLoadedMetadata);
+        video.removeEventListener("error", onError);
+        reject(new Error("Unable to read the uploaded video."));
+      };
+
+      video.addEventListener("loadedmetadata", onLoadedMetadata);
+      video.addEventListener("error", onError);
+    });
+
+    const targetTime = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(0.2, video.duration * 0.1) : 0.1;
+
+    await new Promise<void>((resolve, reject) => {
+      const onSeeked = () => {
+        video.removeEventListener("seeked", onSeeked);
+        video.removeEventListener("error", onError);
+        resolve();
+      };
+      const onError = () => {
+        video.removeEventListener("seeked", onSeeked);
+        video.removeEventListener("error", onError);
+        reject(new Error("Unable to extract a frame from the uploaded video."));
+      };
+
+      video.addEventListener("seeked", onSeeked);
+      video.addEventListener("error", onError);
+      video.currentTime = targetTime;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Unable to prepare a video frame for analysis.");
+    }
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.92));
+    if (!blob) {
+      throw new Error("Unable to convert the video frame to an image.");
+    }
+
+    const baseName = videoFile.name.replace(/\.[^.]+$/, "") || "video";
+    return new File([blob], `${baseName}-frame.jpg`, { type: "image/jpeg" });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function readAuditResponse(res: Response): Promise<ApiAuditResult> {
+  const payload = await res.text();
+
+  if (!payload) {
+    throw new Error("Empty response from audit service.");
+  }
+
+  try {
+    return JSON.parse(payload) as ApiAuditResult;
+  } catch {
+    throw new Error(payload.slice(0, 240));
+  }
+}
+
 function FocusOverlay({ areas }: { areas: FocusArea[] }) {
   return (
     <div className="pointer-events-none absolute inset-0">
@@ -263,8 +345,9 @@ export function SafeSphereDashboard() {
     setError("");
 
     try {
+      const analysisFile = file.type.startsWith("video/") ? await convertVideoToFrameFile(file) : file;
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", analysisFile);
       formData.append("useMock", String(useMock));
       formData.append("mode", inspectionMode);
       formData.append("notes", analystNotes);
@@ -274,7 +357,7 @@ export function SafeSphereDashboard() {
         body: formData,
       });
 
-      const json = (await res.json()) as ApiAuditResult | { error: string };
+      const json = await readAuditResponse(res);
       if (!res.ok || "error" in json) {
         throw new Error("error" in json ? json.error : "Audit failed");
       }
@@ -324,9 +407,9 @@ export function SafeSphereDashboard() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#070b12] text-slate-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(27,125,180,0.24),transparent_38%),radial-gradient(circle_at_80%_0%,rgba(37,181,128,0.18),transparent_28%),linear-gradient(135deg,#05070d_0%,#091420_48%,#0a111a_100%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:32px_32px]" />
+      <div className="pointer-events-none absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[32px_32px]" />
 
-      <main className="relative mx-auto flex w-full max-w-[1300px] flex-col gap-6 px-4 py-6 md:px-8 lg:py-10">
+      <main className="relative mx-auto flex w-full max-w-325 flex-col gap-6 px-4 py-6 md:px-8 lg:py-10">
         <motion.header
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -442,7 +525,7 @@ export function SafeSphereDashboard() {
               </label>
             </div>
 
-            <label className="mb-4 flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/25 bg-white/5 p-5 text-center hover:border-cyan-300/50 hover:bg-cyan-300/5">
+            <label className="mb-4 flex min-h-45 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/25 bg-white/5 p-5 text-center hover:border-cyan-300/50 hover:bg-cyan-300/5">
               <Upload className="h-6 w-6 text-cyan-200" />
               <span className="font-medium">Drop image/video or click to upload</span>
               <span className="text-xs text-slate-300">JPG, PNG, WEBP, MP4, WEBM</span>
@@ -456,12 +539,15 @@ export function SafeSphereDashboard() {
 
             <div className="overflow-hidden rounded-xl border border-white/10 bg-black/40">
               {cameraOn ? (
-                <div className="relative h-[300px] w-full">
+                <div className="relative h-75 w-full">
                   <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover" />
+                  <div className="absolute bottom-3 left-3 rounded-full bg-slate-950/80 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-100 backdrop-blur">
+                    Live camera feed
+                  </div>
                   {focusAreas.length > 0 && <FocusOverlay areas={focusAreas} />}
                 </div>
               ) : previewUrl ? (
-                <div className="relative h-[300px] w-full">
+                <div className="relative h-75 w-full">
                   {file?.type.startsWith("video/") ? (
                     <video src={previewUrl} controls className="h-full w-full object-cover" />
                   ) : (
@@ -474,10 +560,13 @@ export function SafeSphereDashboard() {
                       sizes="(max-width: 1024px) 100vw, 60vw"
                     />
                   )}
+                  <div className="absolute bottom-3 left-3 rounded-full bg-slate-950/80 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-100 backdrop-blur">
+                    {file?.type.startsWith("video/") ? "Video preview" : "Image preview"}
+                  </div>
                   {focusAreas.length > 0 && <FocusOverlay areas={focusAreas} />}
                 </div>
               ) : (
-                <div className="flex h-[300px] items-center justify-center text-sm text-slate-400">
+                <div className="flex h-75 items-center justify-center text-sm text-slate-400">
                   Your captured or uploaded workspace will appear here.
                 </div>
               )}
@@ -487,7 +576,7 @@ export function SafeSphereDashboard() {
               <button
                 onClick={runAudit}
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2 font-medium text-white disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-cyan-500 to-emerald-500 px-4 py-2 font-medium text-white disabled:opacity-60"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
                 Run Safety Audit
