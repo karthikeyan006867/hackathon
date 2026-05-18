@@ -16,7 +16,7 @@ interface ColorHistogram {
   metallicSilver: number;
 }
 
-interface ImageFeatures {
+export interface ImageFeatures {
   dominantColor: string;
   colorHistogram: ColorHistogram;
   brightness: number;
@@ -173,7 +173,7 @@ function estimateEdgeDensity(data: Uint8ClampedArray, width: number, height: num
 }
 
 function classifyByFeatures(features: ImageFeatures): SceneType {
-  const { brightness, hasMetallic, hasWooden, hasConcrete, hasGlass, colorHistogram } = features;
+  const { brightness, hasMetallic, hasWooden, hasConcrete, hasGlass } = features;
 
   // Factory: dark, metallic, industrial
   if (brightness < 0.4 && hasMetallic) {
@@ -216,8 +216,17 @@ function calculateConfidence(features: ImageFeatures, scene: SceneType): number 
   if (features.edgeDensity > 0.05) score += 0.15; // Has features/objects
   if (features.hasMetallic) score += 0.1; // Industrial indicator
   if (features.hasConcrete) score += 0.05; // Structure indicator
+  if (scene === "unknown") score -= 0.08;
+  if (colorHistogramBalance(features.colorHistogram) > 0.35) score += 0.05;
 
   return Math.min(score, 1.0);
+}
+
+function colorHistogramBalance(histogram: ColorHistogram): number {
+  const total = histogram.reds + histogram.greens + histogram.blues + histogram.grays + histogram.darks + histogram.metallicSilver;
+  if (total === 0) return 0;
+  const max = Math.max(histogram.reds, histogram.greens, histogram.blues, histogram.grays);
+  return max / total;
 }
 
 function getDefaultFeatures(): ImageFeatures {

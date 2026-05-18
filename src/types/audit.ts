@@ -27,6 +27,12 @@ export type AuditResult = {
   positives: string[];
   confidence: number;
   timestamp: string;
+  uncertainty?: number;
+  moreInfoNeeded?: string[];
+  annSummary?: string;
+  predictedScene?: string;
+  precisionScore?: number;
+  ensembleVotes?: Record<string, number>;
 };
 
 export type StoredAudit = {

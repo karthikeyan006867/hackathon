@@ -528,12 +528,20 @@ export function SafeSphereDashboard() {
                 <p className="mt-3 text-sm font-medium text-cyan-100">{audit?.environmentStatus || "Awaiting analysis"}</p>
                 <p className="mt-3 text-xs text-slate-300">PPE: {audit?.ppeCompliance || "N/A"}</p>
                 <p className="mt-1 text-xs text-slate-300">
-                  Source: {audit?.source === "mock" ? "Mock generator" : audit ? "Gemini" : "-"}
+                  Source: {audit?.source === "mock" ? "Mock generator" : audit?.source ?? "-"}
                 </p>
                 {compareDelta !== null && (
                   <p className={`mt-3 text-xs ${compareDelta >= 0 ? "text-emerald-300" : "text-rose-300"}`}>
                     Delta vs selected audit: {compareDelta > 0 ? `+${compareDelta}` : compareDelta}
                   </p>
+                )}
+                {audit?.uncertainty !== undefined && (
+                  <div className="mt-3 space-y-1">
+                    <p className="text-xs text-slate-300">ANN uncertainty: {Math.round(audit.uncertainty * 100)}%</p>
+                    {audit.precisionScore !== undefined && (
+                      <p className="text-xs text-cyan-300">ANN precision score: {Math.round(audit.precisionScore * 100)}%</p>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -551,6 +559,42 @@ export function SafeSphereDashboard() {
                 {audit?.executiveSummary || "Run an audit to generate an executive summary."}
               </p>
             </div>
+
+            {audit?.moreInfoNeeded && audit.moreInfoNeeded.length > 0 && (
+              <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/10 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-amber-100/80">More Info Needed</p>
+                <ul className="mt-3 space-y-2 text-sm text-amber-50">
+                  {audit.moreInfoNeeded.map((item, index) => (
+                    <li key={`${item}-${index}`} className="flex gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-amber-200" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {audit?.ensembleVotes && Object.values(audit.ensembleVotes).some(v => v > 0) && (
+              <div className="mt-4 rounded-xl border border-violet-300/20 bg-violet-300/10 p-4">
+                <p className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-violet-100/80">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Ensemble Model Consensus
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  {Object.entries(audit.ensembleVotes)
+                    .filter(([, votes]) => votes > 0)
+                    .sort(([, voteA], [, voteB]) => voteB - voteA)
+                    .slice(0, 4)
+                    .map(([scene, votes]) => (
+                      <div key={scene} className="rounded-lg border border-violet-400/30 bg-violet-500/10 px-2 py-1 text-violet-100">
+                        <span className="capitalize">{scene}</span>
+                        {votes === 3 && <span className="text-violet-300"> ✓✓✓</span>}
+                        {votes === 2 && <span className="text-violet-300"> ✓✓</span>}
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         </section>
 

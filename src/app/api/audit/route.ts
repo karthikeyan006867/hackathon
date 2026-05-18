@@ -158,87 +158,75 @@ export async function POST(req: Request) {
     const fileBytes = await file.arrayBuffer();
     const buffer = Buffer.from(fileBytes);
 
-    // PRIORITY 1: Always run local ML first (on-device, no API dependency)
     let localResult: AuditResult | null = null;
     try {
       localResult = await runLocalAudit(buffer, inspectionMode, notes);
     } catch (localError) {
       console.warn("Local ML analysis warning:", localError);
-      // Fall back to mock if local fails
     }
 
-    // PRIORITY 2: Use Gemini for enrichment/verification if available (not required)
     let geminiResult: AuditResult | null = null;
     if (!useMock && ai && localResult) {
       try {
         const modePrompt = inspectionModes.has(inspectionMode) ? inspectionMode : "general";
         const contextPrompt = notes ? `The supervisor added this context: ${notes}` : "No extra supervisor notes were provided.";
 
-          const response = await ai!.models.generateContent({
-            model: GEMINI_MODEL,
-            contents: [
-              {
-                role: "user",
-                parts: [
-                  {
-                    text: `VERIFICATION MODE: Review this ${modePrompt} workspace analysis. Supervisor notes: ${contextPrompt}. Current analysis shows safety score ${localResult.safetyScore}/100 with ${localResult.hazards.length} hazards. Enhance with additional insights if needed. Return strict JSON matching schema.`,
+        const response = await ai.models.generateContent({
+          model: GEMINI_MODEL,
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: `Review this ${modePrompt} workspace analysis. Supervisor notes: ${contextPrompt}. Current analysis shows safety score ${localResult.safetyScore}/100 with ${localResult.hazards.length} hazards. Return strict JSON matching schema, and add missing details only if needed.`,
+                },
+                {
+                  inlineData: {
+                    mimeType: file.type,
+                    data: Buffer.from(fileBytes).toString("base64"),
                   },
-                  {
-                    inlineData: {
-                      mimeType: file.type,
-                      data: Buffer.from(fileBytes).toString("base64"),
-                    },
-                  },
-                ],
-              },
-            ],
-            config: {
-              responseMimeType: "application/json",
-              responseSchema: safetySchema,
-              temperature: 0.2,
+                },
+              ],
             },
-          });
-        const parsed = JSON.parse(response.text || "{}");
-        geminiResult = normalizeAudit(parsed as Partial<AuditResult>);
+          ],
+          config: {
+            responseMimeType: "application/json",
+            responseSchema: safetySchema,
+            temperature: 0.2,
+          },
+        });
+
+        geminiResult = normalizeAudit(JSON.parse(response.text || "{}") as Partial<AuditResult>);
       } catch (geminiError) {
         console.warn("Gemini enrichment skipped:", geminiError);
-        // Gemini failure doesn't block - we already have local result
       }
     }
 
-    // FINAL RESULT PRIORITY:
-    // 1. If local succeeded: return it (with optional Gemini source indicator)
-    // 2. If Gemini succeeded too: optionally blend/enrich
-    // 3. If mock forced or nothing worked: return mock
     let finalResult: AuditResult;
-    let source: string = "local-ml";
+    let source = "local-ml";
 
     if (useMock || !localResult) {
       finalResult = buildMockAudit(`${file.name}-${inspectionMode}-${notes}`);
       source = "mock";
     } else {
       finalResult = localResult;
-      if (geminiResult) {
-        // Optionally enrich: boost confidence if Gemini agrees
-        finalResult.confidence = (localResult.confidence + geminiResult.confidence) / 2;
-        // Merge hazards if Gemini found additional ones
-          for (const hazard of geminiResult.hazards) {
-            if (!localResult.hazards.some((h) => h.item === hazard.item) && finalResult.hazards.length < 8) {
-              finalResult.hazards.push(hazard);
-            }
-          }
-          source = "local-ml + gemini-verified";
-        }
-      }
 
-      return NextResponse.json({ ...finalResult, source });
-    } catch (error) {
-      console.error("Audit failed", error);
-      return NextResponse.json(
-        {
-          error: "Failed to analyze file.",
-        },
-        { status: 500 }
-      );
+      if (geminiResult) {
+        finalResult.confidence = (localResult.confidence + geminiResult.confidence) / 2;
+
+        for (const hazard of geminiResult.hazards) {
+          if (!finalResult.hazards.some((item) => item.item === hazard.item) && finalResult.hazards.length < 8) {
+            finalResult.hazards.push(hazard);
+          }
+        }
+
+        source = "local-ml + gemini-verified";
+      }
     }
+
+    return NextResponse.json({ ...finalResult, source });
+  } catch (error) {
+    console.error("Audit failed", error);
+    return NextResponse.json({ error: "Failed to analyze file." }, { status: 500 });
+  }
 }
