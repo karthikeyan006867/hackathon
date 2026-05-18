@@ -43,6 +43,11 @@ export type NoteAnalysis = {
   extractedActions: string[];
   followUpQuestions: string[];
   riskSignals: string[];
+  evidencePoints?: string[];
+  contradictions?: string[];
+  reasoningTrail?: string[];
+  ambiguityScore?: number;
+  inferredPriority?: number;
   summary: string;
   sceneHint?: "general" | "unknown" | "workshop" | "lab" | "factory" | "warehouse" | "office" | "outdoor";
   shouldEscalate: boolean;

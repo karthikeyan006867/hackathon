@@ -155,6 +155,41 @@ const SCENE_HINTS: Array<{ scene: SceneType; terms: string[] }> = [
   { scene: "outdoor", terms: ["outdoor", "yard", "parking", "outside"] },
 ];
 
+const EVIDENCE_CLUSTERS: Array<{ label: string; terms: string[] }> = [
+  { label: "chemical handling", terms: ["chemical", "spill", "acid", "solvent", "container", "fume hood"] },
+  { label: "ppe usage", terms: ["ppe", "goggles", "glove", "respirator", "mask", "helmet", "lab coat"] },
+  { label: "equipment state", terms: ["machine", "equipment", "guard", "saw", "forklift", "conveyor", "lockout", "tagout"] },
+  { label: "visibility", terms: ["dark", "shadow", "blur", "blurry", "glare", "lighting", "occlusion"] },
+  { label: "housekeeping", terms: ["clutter", "cable", "walkway", "blocked", "storage", "tool", "debris", "mess"] },
+  { label: "incident response", terms: ["incident", "injury", "smoke", "spark", "evacuate", "shutdown", "urgent"] },
+];
+
+const CONTRADICTION_RULES: Array<{ label: string; anyOf: string[]; noneOf?: string[]; contradiction: string }> = [
+  {
+    label: "urgent context without escalation",
+    anyOf: ["urgent", "critical", "immediately", "shutdown", "evacuate"],
+    contradiction: "The note uses urgent language but does not explicitly request escalation or isolation.",
+  },
+  {
+    label: "chemical notes without chemical keywords",
+    anyOf: ["lab", "fume hood", "beaker"],
+    noneOf: ["chemical", "spill", "acid", "solvent"],
+    contradiction: "The note references lab context but does not specify the chemical hazard being observed.",
+  },
+  {
+    label: "equipment notes without status",
+    anyOf: ["machine", "equipment", "forklift", "saw", "conveyor"],
+    noneOf: ["running", "locked out", "lockout", "tagout", "off"],
+    contradiction: "Equipment is mentioned, but the operating status is missing.",
+  },
+  {
+    label: "visibility issue without capture guidance",
+    anyOf: ["dark", "blur", "shadow", "glare", "lighting"],
+    noneOf: ["retake", "angle", "closer", "brighter"],
+    contradiction: "Visibility concerns are mentioned, but the note does not describe how to improve the capture.",
+  },
+];
+
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
@@ -332,6 +367,43 @@ function buildFollowUps(intent: NoteIntent, questions: string[], sceneHint: stri
   return Array.from(new Set(followUps)).slice(0, 5);
 }
 
+function buildEvidencePoints(tokens: string[], normalizedText: string): string[] {
+  const evidencePoints = new Set<string>();
+
+  for (const cluster of EVIDENCE_CLUSTERS) {
+    const hits = cluster.terms.filter((term) => normalizedText.includes(term));
+    if (hits.length > 0) {
+      evidencePoints.add(`${cluster.label}: ${hits.slice(0, 3).join(", ")}`);
+    }
+  }
+
+  if (tokens.length > 10) {
+    evidencePoints.add(`detail richness: ${tokens.length} tokens`);
+  }
+
+  return Array.from(evidencePoints);
+}
+
+function buildContradictions(normalizedText: string): string[] {
+  const contradictions: string[] = [];
+  for (const rule of CONTRADICTION_RULES) {
+    const matchedAny = rule.anyOf.some((term) => normalizedText.includes(term));
+    if (!matchedAny) continue;
+
+    const missingNoneOf = rule.noneOf ? rule.noneOf.every((term) => !normalizedText.includes(term)) : false;
+    if (missingNoneOf || (rule.noneOf && rule.noneOf.some((term) => !normalizedText.includes(term)))) {
+      contradictions.push(rule.contradiction);
+      continue;
+    }
+
+    if (!rule.noneOf && rule.label === "urgent context without escalation" && !normalizedText.includes("escalat") && !normalizedText.includes("isolat")) {
+      contradictions.push(rule.contradiction);
+    }
+  }
+
+  return contradictions;
+}
+
 export function analyzeSupervisorNotes(notes: string, inspectionMode: string, sceneHint?: SceneType | "general" | "unknown"): NoteAnalysis {
   const normalizedText = normalizeText(notes);
   if (!normalizedText) {
@@ -365,8 +437,18 @@ export function analyzeSupervisorNotes(notes: string, inspectionMode: string, sc
   const entityResult = extractEntities(normalizedText);
   const detectedScene = sceneHint && sceneHint !== "general" && sceneHint !== "unknown" ? sceneHint : detectSceneHint(normalizedText);
   const keyPhrases = extractKeyPhrases(tokens, entityResult.entities);
+  const evidencePoints = buildEvidencePoints(tokens, normalizedText);
+  const contradictions = buildContradictions(normalizedText);
   const detailScore = clamp01(tokens.length / 24 + entityResult.entities.length * 0.11 + keyPhrases.length * 0.03 + intent.confidence * 0.22);
-  const riskBoost = clamp01(urgency.score * 0.22 + entityResult.topics.length * 0.07 + (entityResult.signals.includes("incident escalation") ? 0.18 : 0));
+  const ambiguityScore = clamp01(1 - detailScore + contradictions.length * 0.12);
+  const inferredPriority = clamp01(
+    urgency.score * 0.4 +
+      intent.confidence * 0.25 +
+      entityResult.topics.length * 0.08 +
+      (entityResult.signals.includes("incident escalation") ? 0.18 : 0) +
+      (sceneHint && sceneHint !== "general" && sceneHint !== "unknown" ? 0.05 : 0)
+  );
+  const riskBoost = clamp01(urgency.score * 0.22 + entityResult.topics.length * 0.07 + contradictions.length * 0.08 + (entityResult.signals.includes("incident escalation") ? 0.18 : 0));
   const extractedActions = buildActionItems(intent.intent, entityResult.entities, detectedScene);
   const followUpQuestions = buildFollowUps(intent.intent, entityResult.questions, detectedScene, detailScore);
   const summaryParts = [
@@ -393,6 +475,15 @@ export function analyzeSupervisorNotes(notes: string, inspectionMode: string, sc
     extractedActions,
     followUpQuestions,
     riskSignals: Array.from(new Set([...urgency.signals, ...entityResult.signals])),
+    evidencePoints,
+    contradictions,
+    reasoningTrail: [
+      `Intent classifier selected ${intent.intent} at ${Math.round(intent.confidence * 100)}% confidence.`,
+      `Urgency scorer classified the note as ${urgency.urgency}.`,
+      `Evidence clusters: ${evidencePoints.length > 0 ? evidencePoints.join(" | ") : "none"}.`,
+    ],
+    ambiguityScore,
+    inferredPriority,
     summary: `Supervisor note parsed. ${summaryParts.join(", ")}.`,
     sceneHint: detectedScene,
     shouldEscalate: urgency.urgency === "CRITICAL" || intent.intent === "immediate_action",

@@ -67,6 +67,24 @@ const HAZARD_RULES: HazardRule[] = [
       description: "Supervisor notes indicate incident-level risk. Trigger immediate review, area isolation, and supervisor sign-off.",
     },
   },
+  {
+    id: "contradiction-ambiguity",
+    match: (note) => Boolean((note?.contradictions?.length ?? 0) > 0 || (note?.ambiguityScore ?? 0) > 0.55),
+    hazard: {
+      item: "Context Ambiguity",
+      severity: "MEDIUM",
+      description: "The note contains missing detail or conflicting signals. Request sharper clarification before final sign-off.",
+    },
+  },
+  {
+    id: "priority-escalation",
+    match: (note) => Boolean((note?.inferredPriority ?? 0) > 0.75 && (note?.detailScore ?? 0) > 0.35),
+    hazard: {
+      item: "High Priority Supervisor Signal",
+      severity: "MEDIUM",
+      description: "The note is both detailed and high-priority, so local enrichment should bias toward rapid review and tighter controls.",
+    },
+  },
 ];
 
 function clamp01(value: number): number {
@@ -118,8 +136,20 @@ function buildLocalActions(result: AuditResult, context: EnrichmentContext): str
     actions.push(`${actions.length + 1}. CONTEXT CHECK: ${note.followUpQuestions[0]}`);
   }
 
+  if (note?.contradictions?.length) {
+    actions.push(`${actions.length + 1}. CONTRADICTION REVIEW: ${note.contradictions[0]}`);
+  }
+
+  if (note?.evidencePoints?.length) {
+    actions.push(`${actions.length + 1}. EVIDENCE TRACE: ${note.evidencePoints[0]}`);
+  }
+
   if (context.notes.trim().length === 0) {
     actions.push(`${actions.length + 1}. REQUEST CONTEXT: Ask supervisor for location, equipment state, and PPE context.`);
+  }
+
+  if ((note?.ambiguityScore ?? 0) > 0.45) {
+    actions.push(`${actions.length + 1}. REDUCE AMBIGUITY: Ask for a closer angle or more specific hazard location.`);
   }
 
   return Array.from(new Set(actions)).slice(0, 8);
@@ -137,6 +167,10 @@ function buildPositives(result: AuditResult, context: EnrichmentContext): string
 
   if (note && note.intentConfidence >= 0.7) {
     positives.push(`Local NLP confidently understood note intent as ${note.intent.replace(/_/g, " ")}.`);
+  }
+
+  if (note && note.evidencePoints && note.evidencePoints.length > 0) {
+    positives.push(`Evidence tracing extracted ${note.evidencePoints.length} grounded detail signals from the supervisor note.`);
   }
 
   positives.push(`Inspection mode context (${context.inspectionMode}) was included in local decision weighting.`);
@@ -161,12 +195,16 @@ export function enrichAuditLocally(result: AuditResult, context: EnrichmentConte
   const confidence = clamp01(
     (result.confidence * 0.78) +
       (note?.noteWeight ?? 0.2) * 0.12 +
-      (note?.intentConfidence ?? 0.2) * 0.1
+      (note?.intentConfidence ?? 0.2) * 0.1 -
+      (note?.ambiguityScore ?? 0) * 0.05
   );
 
   const executiveSummaryParts = [result.executiveSummary];
   if (note) {
     executiveSummaryParts.push(`Local note intelligence: ${note.summary}`);
+    if (note.reasoningTrail?.length) {
+      executiveSummaryParts.push(`Reasoning trace: ${note.reasoningTrail.slice(0, 2).join(" ")}`);
+    }
   }
   executiveSummaryParts.push("Final enrichment was performed entirely by local analysis components.");
 
