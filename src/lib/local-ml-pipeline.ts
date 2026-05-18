@@ -7,6 +7,7 @@
 import { classifySceneType, type ImageFeatures, type SceneType } from "./image-classifier";
 import { analyzePictureForHazards } from "./cv-analyzer";
 import { runAnnAnalysis } from "./ann-analyzer";
+import { analyzeSupervisorNotes } from "./nlp-analyzer";
 import { generateFocusAreas, inferHazardsFromObjects } from "./hazard-detector";
 import type { AuditResult, Hazard } from "@/types/audit";
 
@@ -26,11 +27,18 @@ type DetectedObject = {
 export async function runLocalAudit(fileBuffer: Buffer, inspectionMode: string, supervisorNotes: string): Promise<AuditResult> {
   try {
     const { scene, confidence: sceneConfidence, features } = await classifySceneType(fileBuffer);
+    const noteAnalysis = analyzeSupervisorNotes(supervisorNotes, inspectionMode, scene);
     const cvHazards = await analyzePictureForHazards(fileBuffer);
-    const ann = runAnnAnalysis(buildAnnInput(features, cvHazards));
+    const ann = runAnnAnalysis(
+      buildAnnInput(features, {
+        ...cvHazards,
+        riskScore: clamp01(cvHazards.riskScore + noteAnalysis.riskBoost),
+      })
+    );
 
     // IMPROVEMENT: Use ensemble votes and precision score for better scene selection
-    const effectiveScene = ann.precisionScore && ann.precisionScore >= 0.75 ? ann.predictedScene : scene;
+    const noteDrivenScene = noteAnalysis.sceneHint && noteAnalysis.sceneHint !== "general" ? noteAnalysis.sceneHint : scene;
+    const effectiveScene = ann.precisionScore && ann.precisionScore >= 0.75 ? ann.predictedScene : noteDrivenScene;
     const detectedObjects = simulateObjectDetection(effectiveScene, features);
     const inferredHazards = inferHazardsFromObjects(detectedObjects, effectiveScene);
     const focusAreas = generateFocusAreas(detectedObjects, inferredHazards);
@@ -44,10 +52,18 @@ export async function runLocalAudit(fileBuffer: Buffer, inspectionMode: string, 
     const heuristicWeight = 1 - precisionWeight; // 0.5-0.675
     const safetyScore = Math.round(heuristicSafetyScore * heuristicWeight + annSafetyScore * precisionWeight);
 
-    const assessmentText = generateAssessmentText(effectiveScene, safetyScore, allHazards, ann);
-    const actionPlan = generateActionPlan(allHazards, inspectionMode, ann.moreInfoNeeded, supervisorNotes, ann.ensembleVotes);
+    const assessmentText = generateAssessmentText(effectiveScene, safetyScore, allHazards, ann, noteAnalysis);
+    const mergedQuestions = mergeUniqueStrings(ann.moreInfoNeeded, noteAnalysis.followUpQuestions);
+    const actionPlan = generateActionPlan(
+      allHazards,
+      inspectionMode,
+      mergedQuestions,
+      supervisorNotes,
+      ann.ensembleVotes,
+      noteAnalysis
+    );
     const ppeCompliance = evaluatePPE(allHazards, effectiveScene);
-    const positives = generatePositives(effectiveScene, allHazards, cvHazards, ann);
+    const positives = generatePositives(effectiveScene, allHazards, cvHazards, ann, noteAnalysis);
     
     // IMPROVEMENT: Confidence now incorporates precision score and ensemble agreement
     const ensembleConsistency = ann.ensembleVotes ? ann.ensembleVotes[effectiveScene] ?? 0 : 1;
@@ -71,16 +87,21 @@ export async function runLocalAudit(fileBuffer: Buffer, inspectionMode: string, 
       confidence: overallConfidence,
       timestamp: new Date().toISOString(),
       uncertainty: ann.uncertainty,
-      moreInfoNeeded: ann.uncertainty > 0.4 ? ann.moreInfoNeeded : [],
+      moreInfoNeeded: ann.uncertainty > 0.4 ? mergedQuestions : noteAnalysis.followUpQuestions.slice(0, 3),
       annSummary: ann.explanation,
       predictedScene: effectiveScene,
       precisionScore: ann.precisionScore,
       ensembleVotes: ann.ensembleVotes,
+      noteAnalysis,
     };
   } catch (error) {
     console.error("Local audit error:", error);
     return generateFallbackAudit();
   }
+}
+
+function mergeUniqueStrings(...groups: string[][]): string[] {
+  return Array.from(new Set(groups.flat().filter(Boolean)));
 }
 
 function buildAnnInput(features: ImageFeatures, cvHazards: CVHazardsData) {
@@ -178,7 +199,8 @@ function generateAssessmentText(
   scene: SceneType,
   safetyScore: number,
   hazards: Hazard[],
-  ann: { uncertainty: number; explanation: string; moreInfoNeeded: string[] }
+  ann: { uncertainty: number; explanation: string; moreInfoNeeded: string[] },
+  noteAnalysis: { summary: string; shouldEscalate: boolean; urgency: string }
 ): { status: string; summary: string } {
   let status = "";
   let summary = "";
@@ -200,6 +222,11 @@ function generateAssessmentText(
     summary += ` ANN note: ${ann.explanation}`;
   }
 
+  summary += ` Supervisor note intelligence: ${noteAnalysis.summary}`;
+  if (noteAnalysis.shouldEscalate) {
+    summary += ` Escalation requested because the note indicates ${noteAnalysis.urgency.toLowerCase()} urgency.`;
+  }
+
   return { status, summary };
 }
 
@@ -208,7 +235,8 @@ function generateActionPlan(
   inspectionMode: string,
   moreInfoNeeded: string[],
   supervisorNotes: string,
-  ensembleVotes?: Record<string, number>
+  ensembleVotes?: Record<string, number>,
+  noteAnalysis?: { extractedActions: string[]; summary: string; shouldEscalate: boolean }
 ): string[] {
   const actions = [
     `1. ISOLATE HAZARDS: Restrict access to areas with identified ${hazards.filter((hazard) => hazard.severity === "HIGH").length || "high-severity"} hazards and prevent operations until corrected.`,
@@ -224,6 +252,12 @@ function generateActionPlan(
     actions.push(`5. COLLECT MORE CONTEXT: ${moreInfoNeeded[0]}`);
   } else if (supervisorNotes.trim().length > 0) {
     actions.push(`5. SUPERVISOR CONTEXT: Review the uploaded notes and verify them against the visual evidence.`);
+  }
+
+  if (noteAnalysis?.shouldEscalate) {
+    actions.push(`6. ESCALATE NOTE ALERT: ${noteAnalysis.summary}`);
+  } else if (noteAnalysis?.extractedActions.length) {
+    actions.push(`6. NOTE INTELLIGENCE: ${noteAnalysis.extractedActions[0]}`);
   }
 
   return actions;
@@ -243,7 +277,8 @@ function generatePositives(
   scene: SceneType,
   hazards: Hazard[],
   cvHazards: { colorBasedHazards: string[]; obscuredAreas: number },
-  ann: { confidence: number; uncertainty: number }
+  ann: { confidence: number; uncertainty: number },
+  noteAnalysis: { detailScore: number }
 ): string[] {
   const positives: string[] = [];
 
@@ -261,6 +296,10 @@ function generatePositives(
 
   if (ann.confidence > 0.65 && ann.uncertainty < 0.35) {
     positives.push(`ANN confidently identified a ${scene} layout pattern.`);
+  }
+
+  if (noteAnalysis.detailScore > 0.6) {
+    positives.push("Supervisor notes were specific enough to improve context understanding.");
   }
 
   const scenePositives: Record<SceneType, string[]> = {

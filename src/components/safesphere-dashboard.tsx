@@ -26,7 +26,7 @@ const SeverityChart = dynamic(
   { ssr: false }
 );
 
-type ApiAuditResult = AuditResult & { source?: "gemini" | "mock" };
+type ApiAuditResult = AuditResult & { source?: string };
 
 const HISTORY_KEY = "safesphere-history";
 const INSPECTION_MODES = ["general", "workshop", "lab", "factory", "warehouse"] as const;
@@ -62,7 +62,7 @@ function buildReportMarkdown(result: ApiAuditResult, sourceFile: string, mode: s
     "",
     `- File: ${sourceFile}`,
     `- Mode: ${mode}`,
-    `- Source: ${result.source ?? "gemini"}`,
+    `- Source: ${result.source ?? "local-ml"}`,
     `- Generated: ${new Date(result.timestamp).toLocaleString()}`,
     `- Safety score: ${result.safetyScore}`,
     `- Status: ${result.environmentStatus}`,
@@ -74,6 +74,18 @@ function buildReportMarkdown(result: ApiAuditResult, sourceFile: string, mode: s
     "",
     "## Supervisor Notes",
     notes || "No additional notes provided.",
+    "",
+    "## Note Intelligence",
+    ...(result.noteAnalysis
+      ? [
+          `- Intent: ${result.noteAnalysis.intent}`,
+          `- Urgency: ${result.noteAnalysis.urgency}`,
+          `- Detail score: ${Math.round(result.noteAnalysis.detailScore * 100)}%`,
+          `- Entities: ${result.noteAnalysis.entities.join(", ") || "none"}`,
+          `- Key phrases: ${result.noteAnalysis.keyPhrases.join(", ") || "none"}`,
+          `- Follow-up questions: ${result.noteAnalysis.followUpQuestions.join(" | ") || "none"}`,
+        ]
+      : ["- No note analysis available"]),
     "",
     "## Hazards",
     ...result.hazards.map(
@@ -571,6 +583,23 @@ export function SafeSphereDashboard() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {audit?.noteAnalysis && (
+              <div className="mt-4 rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-4">
+                <p className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-cyan-100/80">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Note Intelligence
+                </p>
+                <div className="mt-3 grid gap-2 text-sm text-cyan-50">
+                  <p>Intent: {audit.noteAnalysis.intent}</p>
+                  <p>Urgency: {audit.noteAnalysis.urgency}</p>
+                  <p>Detail score: {Math.round(audit.noteAnalysis.detailScore * 100)}%</p>
+                  <p>Entities: {audit.noteAnalysis.entities.join(", ") || "none"}</p>
+                  <p>Key phrases: {audit.noteAnalysis.keyPhrases.slice(0, 5).join(", ") || "none"}</p>
+                  <p className="text-cyan-100/80">{audit.noteAnalysis.summary}</p>
+                </div>
               </div>
             )}
 

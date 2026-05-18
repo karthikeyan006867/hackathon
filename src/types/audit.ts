@@ -16,6 +16,40 @@ export type FocusArea = {
   note: string;
 };
 
+export type NoteIntent =
+  | "immediate_action"
+  | "clarify_context"
+  | "equipment_status"
+  | "chemical_safety"
+  | "ppe_review"
+  | "visibility_issue"
+  | "housekeeping"
+  | "scene_hint"
+  | "incident_report"
+  | "general_observation";
+
+export type NoteUrgency = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+
+export type NoteAnalysis = {
+  originalText: string;
+  normalizedText: string;
+  intent: NoteIntent;
+  intentConfidence: number;
+  urgency: NoteUrgency;
+  detailScore: number;
+  keyPhrases: string[];
+  entities: string[];
+  topics: string[];
+  extractedActions: string[];
+  followUpQuestions: string[];
+  riskSignals: string[];
+  summary: string;
+  sceneHint?: "general" | "unknown" | "workshop" | "lab" | "factory" | "warehouse" | "office" | "outdoor";
+  shouldEscalate: boolean;
+  noteWeight: number;
+  riskBoost: number;
+};
+
 export type AuditResult = {
   safetyScore: number;
   environmentStatus: string;
@@ -33,6 +67,7 @@ export type AuditResult = {
   predictedScene?: string;
   precisionScore?: number;
   ensembleVotes?: Record<string, number>;
+  noteAnalysis?: NoteAnalysis;
 };
 
 export type StoredAudit = {
