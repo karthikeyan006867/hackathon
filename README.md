@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SafeSphere AI
 
-## Getting Started
+SafeSphere AI is an intelligent industrial safety and workspace auditor that uses Gemini multimodal analysis to inspect uploaded images/videos or webcam snapshots and return strict, schema-constrained JSON for a real-time compliance dashboard.
 
-First, run the development server:
+## Why This Stands Out
+
+- Gemini multimodal inspection for workspace visuals (image + video).
+- Strict JSON response schema for robust UI binding and zero regex parsing.
+- Advanced demo-ready UI: safety score ring, severity chart, hazard filters, checklist actions, history timeline, webcam capture.
+- Mock mode fallback for smooth live demos even when API keys are unavailable.
+
+## Tech Stack
+
+- Next.js 16 (App Router) + TypeScript
+- Tailwind CSS
+- Gemini API via `@google/genai`
+- Recharts + Framer Motion + Lucide icons
+
+## Local Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Add env file:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Set your Gemini key in `.env.local`:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+4. Start server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Gemini Implementation Notes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- API route: `src/app/api/audit/route.ts`
+- Model: `gemini-2.5-flash`
+- Uses `responseMimeType: application/json`
+- Uses strict `responseSchema` to force structured output.
 
-## Learn More
+## Deploy to Vercel
 
-To learn more about Next.js, take a look at the following resources:
+1. Push repository to GitHub.
+2. Import project in Vercel.
+3. Add environment variable `GEMINI_API_KEY` in Vercel project settings.
+4. Deploy.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo Flow Suggestion
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Show blank dashboard.
+2. Upload unsafe workspace image.
+3. Highlight low score, high-severity hazards, and generated action plan.
+4. Upload safer workspace image and show improved score.
+5. Compare audit timeline deltas.
