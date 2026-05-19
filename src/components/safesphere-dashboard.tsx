@@ -117,44 +117,67 @@ async function convertVideoToFrameFile(videoFile: File): Promise<File> {
     video.playsInline = true;
     video.src = objectUrl;
 
-    await new Promise<void>((resolve, reject) => {
-      const onLoadedMetadata = () => {
-        video.removeEventListener("loadedmetadata", onLoadedMetadata);
-        video.removeEventListener("error", onError);
-        resolve();
-      };
-      const onError = () => {
-        video.removeEventListener("loadedmetadata", onLoadedMetadata);
-        video.removeEventListener("error", onError);
-        reject(new Error("Unable to read the uploaded video."));
-      };
+    // Load video metadata with timeout
+    await Promise.race([
+      new Promise<void>((resolve, reject) => {
+        const onLoadedMetadata = () => {
+          video.removeEventListener("loadedmetadata", onLoadedMetadata);
+          video.removeEventListener("error", onError);
+          resolve();
+        };
+        const onError = () => {
+          video.removeEventListener("loadedmetadata", onLoadedMetadata);
+          video.removeEventListener("error", onError);
+          reject(new Error("Unable to read the uploaded video. Ensure it's a valid video file."));
+        };
 
-      video.addEventListener("loadedmetadata", onLoadedMetadata);
-      video.addEventListener("error", onError);
-    });
+        video.addEventListener("loadedmetadata", onLoadedMetadata);
+        video.addEventListener("error", onError);
+      }),
+      new Promise<void>((_, reject) => 
+        setTimeout(() => reject(new Error("Video loading timeout. File may be corrupted.")), 10000)
+      ),
+    ]);
 
-    const targetTime = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(0.2, video.duration * 0.1) : 0.1;
+    // Calculate optimal target time
+    const targetTime = Number.isFinite(video.duration) && video.duration > 0 
+      ? Math.min(0.2, video.duration * 0.1) 
+      : 0.1;
 
-    await new Promise<void>((resolve, reject) => {
-      const onSeeked = () => {
-        video.removeEventListener("seeked", onSeeked);
-        video.removeEventListener("error", onError);
-        resolve();
-      };
-      const onError = () => {
-        video.removeEventListener("seeked", onSeeked);
-        video.removeEventListener("error", onError);
-        reject(new Error("Unable to extract a frame from the uploaded video."));
-      };
+    // Seek to frame with timeout
+    await Promise.race([
+      new Promise<void>((resolve, reject) => {
+        const onSeeked = () => {
+          video.removeEventListener("seeked", onSeeked);
+          video.removeEventListener("error", onError);
+          resolve();
+        };
+        const onError = () => {
+          video.removeEventListener("seeked", onSeeked);
+          video.removeEventListener("error", onError);
+          reject(new Error("Unable to extract a frame from the uploaded video."));
+        };
 
-      video.addEventListener("seeked", onSeeked);
-      video.addEventListener("error", onError);
-      video.currentTime = targetTime;
-    });
+        video.addEventListener("seeked", onSeeked);
+        video.addEventListener("error", onError);
+        video.currentTime = targetTime;
+      }),
+      new Promise<void>((_, reject) => 
+        setTimeout(() => reject(new Error("Frame extraction timeout.")), 5000)
+      ),
+    ]);
 
+    // Create canvas with proper error handling
     const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth || 1280;
-    canvas.height = video.videoHeight || 720;
+    const videoWidth = video.videoWidth || 1280;
+    const videoHeight = video.videoHeight || 720;
+
+    if (videoWidth === 0 || videoHeight === 0) {
+      throw new Error("Video dimensions are invalid. Unable to extract frame.");
+    }
+
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
 
     const context = canvas.getContext("2d");
     if (!context) {
@@ -176,16 +199,26 @@ async function convertVideoToFrameFile(videoFile: File): Promise<File> {
 }
 
 async function readAuditResponse(res: Response): Promise<ApiAuditResult> {
-  const payload = await res.text();
+  let payload: string;
+  try {
+    payload = await res.text();
+  } catch (err) {
+    throw new Error("Failed to read response body");
+  }
 
   if (!payload) {
     throw new Error("Empty response from audit service.");
   }
 
   try {
-    return JSON.parse(payload) as ApiAuditResult;
-  } catch {
-    throw new Error(payload.slice(0, 240));
+    const parsed = JSON.parse(payload);
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error("Response is not a valid JSON object");
+    }
+    return parsed as ApiAuditResult;
+  } catch (parseErr) {
+    const errorPreview = payload.slice(0, 240);
+    throw new Error(`Failed to parse response: ${errorPreview}`);
   }
 }
 
@@ -284,44 +317,90 @@ export function SafeSphereDashboard() {
   async function startCamera() {
     setError("");
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      // Request camera with optimal settings for mobile and desktop
+      const constraints = { 
+        video: { 
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
       if (videoRef.current) {
+        // Ensure srcObject is set and video element is ready
         videoRef.current.srcObject = stream;
+        // Add play promise handling for better error reporting
+        videoRef.current.play().catch(err => {
+          console.error("Video playback error:", err);
+          setError("Failed to start camera playback. Please try again.");
+        });
       }
       setCameraOn(true);
-    } catch {
-      setError("Camera access denied or unavailable.");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Camera access denied or unavailable.";
+      console.error("Camera error:", err);
+      setError(`Camera Error: ${errorMessage}. Please check permissions.`);
     }
   }
 
   function stopCamera() {
     if (streamRef.current) {
-      for (const track of streamRef.current.getTracks()) track.stop();
+      for (const track of streamRef.current.getTracks()) {
+        track.stop();
+      }
       streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     setCameraOn(false);
   }
 
   async function captureSnapshot() {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      setError("Video reference not available");
+      return;
+    }
+
+    // Ensure video has proper dimensions
+    const videoWidth = videoRef.current.videoWidth || 1280;
+    const videoHeight = videoRef.current.videoHeight || 720;
+
+    if (videoWidth === 0 || videoHeight === 0) {
+      setError("Video stream not ready. Please wait a moment and try again.");
+      return;
+    }
 
     const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth || 1280;
-    canvas.height = videoRef.current.videoHeight || 720;
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
     const context = canvas.getContext("2d");
-    if (!context) return;
+    if (!context) {
+      setError("Failed to create canvas context");
+      return;
+    }
 
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    try {
+      context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.92));
-    if (!blob) return;
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, "image/jpeg", 0.92);
+      });
+      
+      if (!blob) {
+        setError("Failed to convert snapshot to image");
+        return;
+      }
 
-    const capture = new File([blob], `snapshot-${Date.now()}.jpg`, { type: "image/jpeg" });
-    setFile(capture);
-    setPreviewUrl(URL.createObjectURL(blob));
-    setAudit(null);
-    stopCamera();
+      const capture = new File([blob], `snapshot-${Date.now()}.jpg`, { type: "image/jpeg" });
+      setFile(capture);
+      setPreviewUrl(URL.createObjectURL(blob));
+      setAudit(null);
+      stopCamera();
+    } catch (err) {
+      setError(`Snapshot capture error: ${err instanceof Error ? err.message : "Unknown error"}`);
+    }
   }
 
   function onFilePicked(nextFile: File | null) {
@@ -345,38 +424,63 @@ export function SafeSphereDashboard() {
     setError("");
 
     try {
-      const analysisFile = file.type.startsWith("video/") ? await convertVideoToFrameFile(file) : file;
+      let analysisFile: File;
+      try {
+        analysisFile = file.type.startsWith("video/") ? await convertVideoToFrameFile(file) : file;
+      } catch (videoErr) {
+        throw new Error(`Video processing failed: ${videoErr instanceof Error ? videoErr.message : "Unknown error"}`);
+      }
+
       const formData = new FormData();
       formData.append("file", analysisFile);
       formData.append("useMock", String(useMock));
       formData.append("mode", inspectionMode);
       formData.append("notes", analystNotes);
 
-      const res = await fetch("/api/audit", {
-        method: "POST",
-        body: formData,
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/audit", {
+          method: "POST",
+          body: formData,
+        });
+      } catch (fetchErr) {
+        throw new Error(`Network error: ${fetchErr instanceof Error ? fetchErr.message : "Failed to reach server"}`);
+      }
 
-      const json = await readAuditResponse(res);
-      if (!res.ok || "error" in json) {
-        const errorMessage = "error" in json && typeof json.error === "string" ? json.error : "Audit failed";
+      let json: unknown;
+      try {
+        json = await readAuditResponse(res);
+      } catch (parseErr) {
+        throw new Error(`Response parsing error: ${parseErr instanceof Error ? parseErr.message : "Invalid response format"}`);
+      }
+
+      // Type guard for the response
+      if (typeof json !== 'object' || json === null) {
+        throw new Error("Invalid response format: expected object");
+      }
+
+      const apiResult = json as ApiAuditResult;
+      if (!res.ok || ("error" in apiResult && typeof apiResult.error === "string")) {
+        const errorMessage = "error" in apiResult && typeof apiResult.error === "string" ? apiResult.error : "Audit failed";
         throw new Error(errorMessage);
       }
 
-      setAudit(json);
+      setAudit(apiResult);
       setCheckedActions([]);
 
       const item: StoredAudit = {
         id: crypto.randomUUID(),
         fileName: file.name,
         previewUrl,
-        result: json,
+        result: apiResult,
       };
       const next = [item, ...history].slice(0, 8);
       setHistory(next);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unexpected error");
+      const errorMessage = err instanceof Error ? err.message : "Unexpected error occurred";
+      setError(errorMessage);
+      console.error("Audit error:", err);
     } finally {
       setLoading(false);
     }
@@ -468,7 +572,7 @@ export function SafeSphereDashboard() {
                 {!cameraOn ? (
                   <button
                     onClick={startCamera}
-                    className="inline-flex items-center gap-2 rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-300/20"
+                    className="inline-flex items-center gap-2 rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-300/20 active:bg-cyan-300/30 touch-manipulation"
                   >
                     <Camera className="h-4 w-4" />
                     Webcam
@@ -477,14 +581,14 @@ export function SafeSphereDashboard() {
                   <>
                     <button
                       onClick={captureSnapshot}
-                      className="inline-flex items-center gap-2 rounded-lg border border-emerald-300/40 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-100 hover:bg-emerald-300/20"
+                      className="inline-flex items-center gap-2 rounded-lg border border-emerald-300/40 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-100 hover:bg-emerald-300/20 active:bg-emerald-300/30 touch-manipulation"
                     >
                       <Sparkles className="h-4 w-4" />
                       Capture
                     </button>
                     <button
                       onClick={stopCamera}
-                      className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-3 py-2 text-sm text-slate-100 hover:bg-white/10"
+                      className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-3 py-2 text-sm text-slate-100 hover:bg-white/10 active:bg-white/20 touch-manipulation"
                     >
                       Stop
                     </button>
@@ -577,7 +681,7 @@ export function SafeSphereDashboard() {
               <button
                 onClick={runAudit}
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-cyan-500 to-emerald-500 px-4 py-2 font-medium text-white disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-cyan-500 to-emerald-500 px-4 py-2 font-medium text-white disabled:opacity-60 hover:shadow-lg active:shadow-md touch-manipulation transition-shadow"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
                 Run Safety Audit
@@ -585,7 +689,7 @@ export function SafeSphereDashboard() {
               <button
                 onClick={downloadReport}
                 disabled={!audit}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 font-medium text-slate-100 disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 font-medium text-slate-100 disabled:opacity-40 hover:bg-white/10 active:bg-white/15 touch-manipulation transition-colors"
               >
                 <Download className="h-4 w-4" />
                 Export Report
