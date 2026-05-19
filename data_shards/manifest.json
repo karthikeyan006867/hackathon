@@ -1,0 +1,26 @@
+{
+  "shards": [
+    {
+      "file": "shard-0.ndjson",
+      "samples": 200
+    },
+    {
+      "file": "shard-1.ndjson",
+      "samples": 200
+    },
+    {
+      "file": "shard-2.ndjson",
+      "samples": 200
+    },
+    {
+      "file": "shard-3.ndjson",
+      "samples": 200
+    },
+    {
+      "file": "shard-4.ndjson",
+      "samples": 200
+    }
+  ],
+  "totalSamples": 1000,
+  "generatedAt": "2026-05-19T04:05:39.590Z"
+}

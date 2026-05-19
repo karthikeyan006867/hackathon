@@ -1,0 +1,200 @@
+{"id":"synth-1779163211820-200","timestamp":"2026-05-19T04:00:11.820Z","scene":"warehouse","intent":"ppe_review","note":"Workers missing gloves and goggles near grinder."}
+{"id":"synth-1779163211820-201","timestamp":"2026-05-19T04:00:11.820Z","scene":"outdoor","intent":"immediate_action","note":"Urgent: unsecured guard near the compressor."}
+{"id":"synth-1779163211820-202","timestamp":"2026-05-19T04:00:11.820Z","scene":"office","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration. Occurred at 2026-05-19T04:00:11.820Z."}
+{"id":"synth-1779163211821-203","timestamp":"2026-05-19T04:00:11.821Z","scene":"workshop","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard. Occurred at 2026-05-19T04:00:11.821Z."}
+{"id":"synth-1779163211821-204","timestamp":"2026-05-19T04:00:11.821Z","scene":"outdoor","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211821-205","timestamp":"2026-05-19T04:00:11.821Z","scene":"unknown","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211821-206","timestamp":"2026-05-19T04:00:11.821Z","scene":"outdoor","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard. See attached photo."}
+{"id":"synth-1779163211827-207","timestamp":"2026-05-19T04:00:11.827Z","scene":"outdoor","intent":"immediate_action","note":"Urgent: unsecured guard near the compressor."}
+{"id":"synth-1779163211828-208","timestamp":"2026-05-19T04:00:11.828Z","scene":"warehouse","intent":"immediate_action","note":"Urgent: damaged tool near the lathe. See attached photo. Occurred at 2026-05-19T04:00:11.828Z."}
+{"id":"synth-1779163211829-209","timestamp":"2026-05-19T04:00:11.829Z","scene":"factory","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211829-210","timestamp":"2026-05-19T04:00:11.829Z","scene":"office","intent":"clarify_context","note":"Please verify the condition of the compressor at station 3. See attached photo."}
+{"id":"synth-1779163211830-211","timestamp":"2026-05-19T04:00:11.830Z","scene":"factory","intent":"clarify_context","note":"Please verify the condition of the lathe at station 3."}
+{"id":"synth-1779163211830-212","timestamp":"2026-05-19T04:00:11.830Z","scene":"unknown","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced. See attached photo."}
+{"id":"synth-1779163211830-213","timestamp":"2026-05-19T04:00:11.830Z","scene":"unknown","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211831-214","timestamp":"2026-05-19T04:00:11.831Z","scene":"unknown","intent":"immediate_action","note":"Urgent: missing PPE near the conveyor. See attached photo."}
+{"id":"synth-1779163211832-215","timestamp":"2026-05-19T04:00:11.832Z","scene":"office","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. See attached photo."}
+{"id":"synth-1779163211832-216","timestamp":"2026-05-19T04:00:11.832Z","scene":"lab","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211832-217","timestamp":"2026-05-19T04:00:11.832Z","scene":"office","intent":"ppe_review","note":"Workers missing gloves and goggles near panel."}
+{"id":"synth-1779163211833-218","timestamp":"2026-05-19T04:00:11.833Z","scene":"warehouse","intent":"immediate_action","note":"Urgent: unsecured guard near the compressor."}
+{"id":"synth-1779163211834-219","timestamp":"2026-05-19T04:00:11.834Z","scene":"factory","intent":"clarify_context","note":"Please verify the condition of the compressor at station 3."}
+{"id":"synth-1779163211834-220","timestamp":"2026-05-19T04:00:11.834Z","scene":"factory","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211843-221","timestamp":"2026-05-19T04:00:11.843Z","scene":"lab","intent":"immediate_action","note":"Urgent: unsecured guard near the compressor. See attached photo."}
+{"id":"synth-1779163211846-222","timestamp":"2026-05-19T04:00:11.846Z","scene":"outdoor","intent":"clarify_context","note":"Please verify the condition of the conveyor at station 3."}
+{"id":"synth-1779163211850-223","timestamp":"2026-05-19T04:00:11.850Z","scene":"unknown","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration. Occurred at 2026-05-19T04:00:11.848Z."}
+{"id":"synth-1779163211850-224","timestamp":"2026-05-19T04:00:11.850Z","scene":"office","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. Occurred at 2026-05-19T04:00:11.850Z."}
+{"id":"synth-1779163211850-225","timestamp":"2026-05-19T04:00:11.850Z","scene":"workshop","intent":"equipment_status","note":"Observed abnormal noise from motor; vibration apparent."}
+{"id":"synth-1779163211850-226","timestamp":"2026-05-19T04:00:11.850Z","scene":"unknown","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211850-227","timestamp":"2026-05-19T04:00:11.850Z","scene":"office","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift. See attached photo."}
+{"id":"synth-1779163211850-228","timestamp":"2026-05-19T04:00:11.850Z","scene":"warehouse","intent":"equipment_status","note":"Observed abnormal noise from motor; vibration apparent. See attached photo."}
+{"id":"synth-1779163211850-229","timestamp":"2026-05-19T04:00:11.850Z","scene":"lab","intent":"scene_hint","note":"Routine check in lab area shows signs of wear."}
+{"id":"synth-1779163211850-230","timestamp":"2026-05-19T04:00:11.850Z","scene":"warehouse","intent":"clarify_context","note":"Please verify the condition of the conveyor at station 3."}
+{"id":"synth-1779163211850-231","timestamp":"2026-05-19T04:00:11.850Z","scene":"factory","intent":"immediate_action","note":"Urgent: overloaded shelf near the panel. Occurred at 2026-05-19T04:00:11.850Z."}
+{"id":"synth-1779163211851-232","timestamp":"2026-05-19T04:00:11.851Z","scene":"warehouse","intent":"scene_hint","note":"Routine check in warehouse area shows signs of wear."}
+{"id":"synth-1779163211853-233","timestamp":"2026-05-19T04:00:11.853Z","scene":"office","intent":"scene_hint","note":"Routine check in office area shows signs of wear. See attached photo. Occurred at 2026-05-19T04:00:11.853Z."}
+{"id":"synth-1779163211853-234","timestamp":"2026-05-19T04:00:11.853Z","scene":"workshop","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211853-235","timestamp":"2026-05-19T04:00:11.853Z","scene":"factory","intent":"equipment_status","note":"Observed abnormal noise from compressor; vibration apparent."}
+{"id":"synth-1779163211854-236","timestamp":"2026-05-19T04:00:11.854Z","scene":"lab","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211854-237","timestamp":"2026-05-19T04:00:11.854Z","scene":"workshop","intent":"clarify_context","note":"Please verify the condition of the lathe at station 3. Occurred at 2026-05-19T04:00:11.854Z."}
+{"id":"synth-1779163211854-238","timestamp":"2026-05-19T04:00:11.854Z","scene":"unknown","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211854-239","timestamp":"2026-05-19T04:00:11.854Z","scene":"workshop","intent":"general_observation","note":"General observation: minor condition near conveyor."}
+{"id":"synth-1779163211854-240","timestamp":"2026-05-19T04:00:11.854Z","scene":"lab","intent":"immediate_action","note":"Urgent: unsecured guard near the panel."}
+{"id":"synth-1779163211854-241","timestamp":"2026-05-19T04:00:11.854Z","scene":"outdoor","intent":"scene_hint","note":"Routine check in outdoor area shows signs of wear."}
+{"id":"synth-1779163211854-242","timestamp":"2026-05-19T04:00:11.854Z","scene":"factory","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211854-243","timestamp":"2026-05-19T04:00:11.854Z","scene":"office","intent":"scene_hint","note":"Routine check in office area shows signs of wear."}
+{"id":"synth-1779163211854-244","timestamp":"2026-05-19T04:00:11.854Z","scene":"office","intent":"ppe_review","note":"Workers missing gloves and goggles near compressor."}
+{"id":"synth-1779163211865-245","timestamp":"2026-05-19T04:00:11.865Z","scene":"outdoor","intent":"general_observation","note":"General observation: intermittent condition near forklift."}
+{"id":"synth-1779163211865-246","timestamp":"2026-05-19T04:00:11.865Z","scene":"warehouse","intent":"clarify_context","note":"Please verify the condition of the compressor at station 3. Occurred at 2026-05-19T04:00:11.865Z."}
+{"id":"synth-1779163211865-247","timestamp":"2026-05-19T04:00:11.865Z","scene":"unknown","intent":"equipment_status","note":"Observed abnormal noise from forklift; vibration apparent. See attached photo."}
+{"id":"synth-1779163211866-248","timestamp":"2026-05-19T04:00:11.866Z","scene":"outdoor","intent":"ppe_review","note":"Workers missing gloves and goggles near conveyor."}
+{"id":"synth-1779163211866-249","timestamp":"2026-05-19T04:00:11.866Z","scene":"warehouse","intent":"equipment_status","note":"Observed abnormal noise from conveyor; vibration apparent. See attached photo."}
+{"id":"synth-1779163211866-250","timestamp":"2026-05-19T04:00:11.866Z","scene":"factory","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211867-251","timestamp":"2026-05-19T04:00:11.867Z","scene":"warehouse","intent":"equipment_status","note":"Observed abnormal noise from grinder; vibration apparent. See attached photo."}
+{"id":"synth-1779163211867-252","timestamp":"2026-05-19T04:00:11.867Z","scene":"warehouse","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211867-253","timestamp":"2026-05-19T04:00:11.867Z","scene":"warehouse","intent":"clarify_context","note":"Please verify the condition of the forklift at station 3."}
+{"id":"synth-1779163211867-254","timestamp":"2026-05-19T04:00:11.867Z","scene":"factory","intent":"immediate_action","note":"Urgent: overloaded shelf near the grinder."}
+{"id":"synth-1779163211867-255","timestamp":"2026-05-19T04:00:11.867Z","scene":"warehouse","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration. See attached photo."}
+{"id":"synth-1779163211867-256","timestamp":"2026-05-19T04:00:11.867Z","scene":"workshop","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211867-257","timestamp":"2026-05-19T04:00:11.867Z","scene":"outdoor","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced. Occurred at 2026-05-19T04:00:11.867Z."}
+{"id":"synth-1779163211867-258","timestamp":"2026-05-19T04:00:11.867Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211867-259","timestamp":"2026-05-19T04:00:11.867Z","scene":"unknown","intent":"immediate_action","note":"Urgent: slippery floor near the grinder."}
+{"id":"synth-1779163211867-260","timestamp":"2026-05-19T04:00:11.867Z","scene":"outdoor","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211867-261","timestamp":"2026-05-19T04:00:11.867Z","scene":"workshop","intent":"general_observation","note":"General observation: visible condition near conveyor."}
+{"id":"synth-1779163211867-262","timestamp":"2026-05-19T04:00:11.867Z","scene":"warehouse","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211867-263","timestamp":"2026-05-19T04:00:11.867Z","scene":"lab","intent":"immediate_action","note":"Urgent: exposed wire near the panel. See attached photo."}
+{"id":"synth-1779163211867-264","timestamp":"2026-05-19T04:00:11.867Z","scene":"unknown","intent":"general_observation","note":"General observation: persistent condition near panel."}
+{"id":"synth-1779163211867-265","timestamp":"2026-05-19T04:00:11.867Z","scene":"factory","intent":"general_observation","note":"General observation: visible condition near motor. Occurred at 2026-05-19T04:00:11.867Z."}
+{"id":"synth-1779163211867-266","timestamp":"2026-05-19T04:00:11.867Z","scene":"lab","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211867-267","timestamp":"2026-05-19T04:00:11.867Z","scene":"office","intent":"general_observation","note":"General observation: intermittent condition near forklift."}
+{"id":"synth-1779163211867-268","timestamp":"2026-05-19T04:00:11.867Z","scene":"outdoor","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211867-269","timestamp":"2026-05-19T04:00:11.867Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211867-270","timestamp":"2026-05-19T04:00:11.867Z","scene":"outdoor","intent":"general_observation","note":"General observation: observed condition near grinder. See attached photo."}
+{"id":"synth-1779163211867-271","timestamp":"2026-05-19T04:00:11.867Z","scene":"outdoor","intent":"scene_hint","note":"Routine check in outdoor area shows signs of wear."}
+{"id":"synth-1779163211868-272","timestamp":"2026-05-19T04:00:11.868Z","scene":"workshop","intent":"clarify_context","note":"Please verify the condition of the pump at station 3."}
+{"id":"synth-1779163211868-273","timestamp":"2026-05-19T04:00:11.868Z","scene":"office","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211868-274","timestamp":"2026-05-19T04:00:11.868Z","scene":"outdoor","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211868-275","timestamp":"2026-05-19T04:00:11.868Z","scene":"warehouse","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211868-276","timestamp":"2026-05-19T04:00:11.868Z","scene":"outdoor","intent":"clarify_context","note":"Please verify the condition of the lathe at station 3. Occurred at 2026-05-19T04:00:11.868Z."}
+{"id":"synth-1779163211868-277","timestamp":"2026-05-19T04:00:11.868Z","scene":"warehouse","intent":"immediate_action","note":"Urgent: overloaded shelf near the pump."}
+{"id":"synth-1779163211868-278","timestamp":"2026-05-19T04:00:11.868Z","scene":"factory","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift."}
+{"id":"synth-1779163211868-279","timestamp":"2026-05-19T04:00:11.868Z","scene":"factory","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211868-280","timestamp":"2026-05-19T04:00:11.868Z","scene":"outdoor","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift."}
+{"id":"synth-1779163211868-281","timestamp":"2026-05-19T04:00:11.868Z","scene":"warehouse","intent":"ppe_review","note":"Workers missing gloves and goggles near conveyor. Occurred at 2026-05-19T04:00:11.868Z."}
+{"id":"synth-1779163211868-282","timestamp":"2026-05-19T04:00:11.868Z","scene":"warehouse","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211868-283","timestamp":"2026-05-19T04:00:11.868Z","scene":"outdoor","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211868-284","timestamp":"2026-05-19T04:00:11.868Z","scene":"office","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration. Occurred at 2026-05-19T04:00:11.868Z."}
+{"id":"synth-1779163211869-285","timestamp":"2026-05-19T04:00:11.869Z","scene":"workshop","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211869-286","timestamp":"2026-05-19T04:00:11.869Z","scene":"factory","intent":"equipment_status","note":"Observed abnormal noise from grinder; vibration apparent."}
+{"id":"synth-1779163211869-287","timestamp":"2026-05-19T04:00:11.869Z","scene":"office","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift."}
+{"id":"synth-1779163211869-288","timestamp":"2026-05-19T04:00:11.869Z","scene":"factory","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211869-289","timestamp":"2026-05-19T04:00:11.869Z","scene":"workshop","intent":"general_observation","note":"General observation: minor condition near conveyor."}
+{"id":"synth-1779163211869-290","timestamp":"2026-05-19T04:00:11.869Z","scene":"lab","intent":"immediate_action","note":"Urgent: damaged tool near the compressor. See attached photo."}
+{"id":"synth-1779163211869-291","timestamp":"2026-05-19T04:00:11.869Z","scene":"office","intent":"general_observation","note":"General observation: suspected condition near grinder."}
+{"id":"synth-1779163211869-292","timestamp":"2026-05-19T04:00:11.869Z","scene":"workshop","intent":"scene_hint","note":"Routine check in workshop area shows signs of wear."}
+{"id":"synth-1779163211869-293","timestamp":"2026-05-19T04:00:11.869Z","scene":"warehouse","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211869-294","timestamp":"2026-05-19T04:00:11.869Z","scene":"lab","intent":"general_observation","note":"General observation: visible condition near motor. Occurred at 2026-05-19T04:00:11.869Z."}
+{"id":"synth-1779163211869-295","timestamp":"2026-05-19T04:00:11.869Z","scene":"workshop","intent":"immediate_action","note":"Urgent: missing PPE near the forklift. See attached photo."}
+{"id":"synth-1779163211869-296","timestamp":"2026-05-19T04:00:11.869Z","scene":"warehouse","intent":"immediate_action","note":"Urgent: missing PPE near the forklift."}
+{"id":"synth-1779163211869-297","timestamp":"2026-05-19T04:00:11.869Z","scene":"lab","intent":"immediate_action","note":"Urgent: leak near the conveyor."}
+{"id":"synth-1779163211869-298","timestamp":"2026-05-19T04:00:11.869Z","scene":"warehouse","intent":"equipment_status","note":"Observed abnormal noise from forklift; vibration apparent."}
+{"id":"synth-1779163211869-299","timestamp":"2026-05-19T04:00:11.869Z","scene":"factory","intent":"ppe_review","note":"Workers missing gloves and goggles near pump. See attached photo. Occurred at 2026-05-19T04:00:11.869Z."}
+{"id":"synth-1779163211869-300","timestamp":"2026-05-19T04:00:11.869Z","scene":"workshop","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211869-301","timestamp":"2026-05-19T04:00:11.869Z","scene":"unknown","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard. See attached photo."}
+{"id":"synth-1779163211869-302","timestamp":"2026-05-19T04:00:11.869Z","scene":"warehouse","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211869-303","timestamp":"2026-05-19T04:00:11.869Z","scene":"outdoor","intent":"ppe_review","note":"Workers missing gloves and goggles near grinder. See attached photo."}
+{"id":"synth-1779163211869-304","timestamp":"2026-05-19T04:00:11.869Z","scene":"workshop","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced. Occurred at 2026-05-19T04:00:11.869Z."}
+{"id":"synth-1779163211869-305","timestamp":"2026-05-19T04:00:11.869Z","scene":"outdoor","intent":"scene_hint","note":"Routine check in outdoor area shows signs of wear."}
+{"id":"synth-1779163211871-306","timestamp":"2026-05-19T04:00:11.871Z","scene":"unknown","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard. See attached photo."}
+{"id":"synth-1779163211871-307","timestamp":"2026-05-19T04:00:11.871Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. See attached photo."}
+{"id":"synth-1779163211875-308","timestamp":"2026-05-19T04:00:11.875Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211875-309","timestamp":"2026-05-19T04:00:11.875Z","scene":"workshop","intent":"equipment_status","note":"Observed abnormal noise from conveyor; vibration apparent. See attached photo."}
+{"id":"synth-1779163211875-310","timestamp":"2026-05-19T04:00:11.875Z","scene":"warehouse","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211875-311","timestamp":"2026-05-19T04:00:11.875Z","scene":"workshop","intent":"immediate_action","note":"Urgent: exposed wire near the grinder."}
+{"id":"synth-1779163211875-312","timestamp":"2026-05-19T04:00:11.875Z","scene":"workshop","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard. Occurred at 2026-05-19T04:00:11.875Z."}
+{"id":"synth-1779163211875-313","timestamp":"2026-05-19T04:00:11.875Z","scene":"factory","intent":"general_observation","note":"General observation: intermittent condition near lathe."}
+{"id":"synth-1779163211875-314","timestamp":"2026-05-19T04:00:11.875Z","scene":"warehouse","intent":"general_observation","note":"General observation: persistent condition near conveyor. Occurred at 2026-05-19T04:00:11.875Z."}
+{"id":"synth-1779163211875-315","timestamp":"2026-05-19T04:00:11.875Z","scene":"outdoor","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211875-316","timestamp":"2026-05-19T04:00:11.875Z","scene":"factory","intent":"immediate_action","note":"Urgent: blocked exit near the compressor. Occurred at 2026-05-19T04:00:11.875Z."}
+{"id":"synth-1779163211875-317","timestamp":"2026-05-19T04:00:11.875Z","scene":"factory","intent":"ppe_review","note":"Workers missing gloves and goggles near lathe."}
+{"id":"synth-1779163211876-318","timestamp":"2026-05-19T04:00:11.876Z","scene":"workshop","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. Occurred at 2026-05-19T04:00:11.875Z."}
+{"id":"synth-1779163211876-319","timestamp":"2026-05-19T04:00:11.876Z","scene":"unknown","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211876-320","timestamp":"2026-05-19T04:00:11.876Z","scene":"factory","intent":"ppe_review","note":"Workers missing gloves and goggles near compressor. Occurred at 2026-05-19T04:00:11.876Z."}
+{"id":"synth-1779163211876-321","timestamp":"2026-05-19T04:00:11.876Z","scene":"factory","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211876-322","timestamp":"2026-05-19T04:00:11.876Z","scene":"warehouse","intent":"general_observation","note":"General observation: suspected condition near compressor."}
+{"id":"synth-1779163211876-323","timestamp":"2026-05-19T04:00:11.876Z","scene":"unknown","intent":"clarify_context","note":"Please verify the condition of the compressor at station 3."}
+{"id":"synth-1779163211876-324","timestamp":"2026-05-19T04:00:11.876Z","scene":"workshop","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211876-325","timestamp":"2026-05-19T04:00:11.876Z","scene":"warehouse","intent":"scene_hint","note":"Routine check in warehouse area shows signs of wear."}
+{"id":"synth-1779163211876-326","timestamp":"2026-05-19T04:00:11.876Z","scene":"factory","intent":"general_observation","note":"General observation: suspected condition near panel."}
+{"id":"synth-1779163211876-327","timestamp":"2026-05-19T04:00:11.876Z","scene":"lab","intent":"general_observation","note":"General observation: observed condition near motor."}
+{"id":"synth-1779163211876-328","timestamp":"2026-05-19T04:00:11.876Z","scene":"workshop","intent":"scene_hint","note":"Routine check in workshop area shows signs of wear. See attached photo."}
+{"id":"synth-1779163211876-329","timestamp":"2026-05-19T04:00:11.876Z","scene":"warehouse","intent":"ppe_review","note":"Workers missing gloves and goggles near compressor. See attached photo."}
+{"id":"synth-1779163211881-330","timestamp":"2026-05-19T04:00:11.881Z","scene":"office","intent":"scene_hint","note":"Routine check in office area shows signs of wear. See attached photo."}
+{"id":"synth-1779163211881-331","timestamp":"2026-05-19T04:00:11.881Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211881-332","timestamp":"2026-05-19T04:00:11.881Z","scene":"lab","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211881-333","timestamp":"2026-05-19T04:00:11.881Z","scene":"warehouse","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. Occurred at 2026-05-19T04:00:11.881Z."}
+{"id":"synth-1779163211881-334","timestamp":"2026-05-19T04:00:11.881Z","scene":"factory","intent":"ppe_review","note":"Workers missing gloves and goggles near panel. See attached photo."}
+{"id":"synth-1779163211881-335","timestamp":"2026-05-19T04:00:11.881Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211881-336","timestamp":"2026-05-19T04:00:11.881Z","scene":"workshop","intent":"clarify_context","note":"Please verify the condition of the lathe at station 3. Occurred at 2026-05-19T04:00:11.881Z."}
+{"id":"synth-1779163211881-337","timestamp":"2026-05-19T04:00:11.881Z","scene":"lab","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift. See attached photo."}
+{"id":"synth-1779163211881-338","timestamp":"2026-05-19T04:00:11.881Z","scene":"factory","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. See attached photo."}
+{"id":"synth-1779163211881-339","timestamp":"2026-05-19T04:00:11.881Z","scene":"workshop","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211881-340","timestamp":"2026-05-19T04:00:11.881Z","scene":"unknown","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration. See attached photo."}
+{"id":"synth-1779163211881-341","timestamp":"2026-05-19T04:00:11.881Z","scene":"office","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211881-342","timestamp":"2026-05-19T04:00:11.881Z","scene":"warehouse","intent":"general_observation","note":"General observation: suspected condition near panel."}
+{"id":"synth-1779163211881-343","timestamp":"2026-05-19T04:00:11.881Z","scene":"workshop","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211881-344","timestamp":"2026-05-19T04:00:11.881Z","scene":"outdoor","intent":"general_observation","note":"General observation: intermittent condition near conveyor."}
+{"id":"synth-1779163211881-345","timestamp":"2026-05-19T04:00:11.881Z","scene":"unknown","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211881-346","timestamp":"2026-05-19T04:00:11.881Z","scene":"unknown","intent":"immediate_action","note":"Urgent: leak near the lathe."}
+{"id":"synth-1779163211919-347","timestamp":"2026-05-19T04:00:11.919Z","scene":"factory","intent":"scene_hint","note":"Routine check in factory area shows signs of wear."}
+{"id":"synth-1779163211919-348","timestamp":"2026-05-19T04:00:11.919Z","scene":"lab","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211919-349","timestamp":"2026-05-19T04:00:11.919Z","scene":"office","intent":"ppe_review","note":"Workers missing gloves and goggles near lathe. See attached photo."}
+{"id":"synth-1779163211919-350","timestamp":"2026-05-19T04:00:11.919Z","scene":"factory","intent":"equipment_status","note":"Observed abnormal noise from compressor; vibration apparent."}
+{"id":"synth-1779163211919-351","timestamp":"2026-05-19T04:00:11.919Z","scene":"factory","intent":"general_observation","note":"General observation: persistent condition near panel."}
+{"id":"synth-1779163211919-352","timestamp":"2026-05-19T04:00:11.919Z","scene":"factory","intent":"general_observation","note":"General observation: visible condition near compressor. See attached photo."}
+{"id":"synth-1779163211919-353","timestamp":"2026-05-19T04:00:11.919Z","scene":"unknown","intent":"immediate_action","note":"Urgent: leak near the lathe."}
+{"id":"synth-1779163211919-354","timestamp":"2026-05-19T04:00:11.919Z","scene":"factory","intent":"immediate_action","note":"Urgent: leak near the grinder."}
+{"id":"synth-1779163211920-355","timestamp":"2026-05-19T04:00:11.920Z","scene":"unknown","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211920-356","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211920-357","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"immediate_action","note":"Urgent: slippery floor near the conveyor."}
+{"id":"synth-1779163211920-358","timestamp":"2026-05-19T04:00:11.920Z","scene":"workshop","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration. See attached photo."}
+{"id":"synth-1779163211920-359","timestamp":"2026-05-19T04:00:11.920Z","scene":"lab","intent":"equipment_status","note":"Observed abnormal noise from compressor; vibration apparent."}
+{"id":"synth-1779163211920-360","timestamp":"2026-05-19T04:00:11.920Z","scene":"office","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift. Occurred at 2026-05-19T04:00:11.920Z."}
+{"id":"synth-1779163211920-361","timestamp":"2026-05-19T04:00:11.920Z","scene":"warehouse","intent":"clarify_context","note":"Please verify the condition of the conveyor at station 3."}
+{"id":"synth-1779163211920-362","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"equipment_status","note":"Observed abnormal noise from grinder; vibration apparent."}
+{"id":"synth-1779163211920-363","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. See attached photo."}
+{"id":"synth-1779163211920-364","timestamp":"2026-05-19T04:00:11.920Z","scene":"unknown","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211920-365","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211920-366","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"equipment_status","note":"Observed abnormal noise from pump; vibration apparent. See attached photo."}
+{"id":"synth-1779163211920-367","timestamp":"2026-05-19T04:00:11.920Z","scene":"warehouse","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211920-368","timestamp":"2026-05-19T04:00:11.920Z","scene":"workshop","intent":"ppe_review","note":"Workers missing gloves and goggles near forklift."}
+{"id":"synth-1779163211920-369","timestamp":"2026-05-19T04:00:11.920Z","scene":"lab","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211920-370","timestamp":"2026-05-19T04:00:11.920Z","scene":"lab","intent":"scene_hint","note":"Routine check in lab area shows signs of wear. Occurred at 2026-05-19T04:00:11.920Z."}
+{"id":"synth-1779163211920-371","timestamp":"2026-05-19T04:00:11.920Z","scene":"outdoor","intent":"ppe_review","note":"Workers missing gloves and goggles near compressor. See attached photo."}
+{"id":"synth-1779163211921-372","timestamp":"2026-05-19T04:00:11.921Z","scene":"office","intent":"scene_hint","note":"Routine check in office area shows signs of wear."}
+{"id":"synth-1779163211921-373","timestamp":"2026-05-19T04:00:11.921Z","scene":"office","intent":"equipment_status","note":"Observed abnormal noise from forklift; vibration apparent."}
+{"id":"synth-1779163211921-374","timestamp":"2026-05-19T04:00:11.921Z","scene":"factory","intent":"incident_report","note":"Reported injury: operator slipped; minor laceration."}
+{"id":"synth-1779163211930-375","timestamp":"2026-05-19T04:00:11.930Z","scene":"office","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes."}
+{"id":"synth-1779163211930-376","timestamp":"2026-05-19T04:00:11.930Z","scene":"factory","intent":"immediate_action","note":"Urgent: blocked exit near the compressor. See attached photo."}
+{"id":"synth-1779163211930-377","timestamp":"2026-05-19T04:00:11.930Z","scene":"workshop","intent":"clarify_context","note":"Please verify the condition of the conveyor at station 3."}
+{"id":"synth-1779163211931-378","timestamp":"2026-05-19T04:00:11.931Z","scene":"factory","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced. See attached photo."}
+{"id":"synth-1779163211931-379","timestamp":"2026-05-19T04:00:11.931Z","scene":"lab","intent":"general_observation","note":"General observation: critical condition near forklift. Occurred at 2026-05-19T04:00:11.931Z."}
+{"id":"synth-1779163211931-380","timestamp":"2026-05-19T04:00:11.931Z","scene":"lab","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced."}
+{"id":"synth-1779163211931-381","timestamp":"2026-05-19T04:00:11.931Z","scene":"outdoor","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. Occurred at 2026-05-19T04:00:11.931Z."}
+{"id":"synth-1779163211931-382","timestamp":"2026-05-19T04:00:11.931Z","scene":"workshop","intent":"ppe_review","note":"Workers missing gloves and goggles near pump."}
+{"id":"synth-1779163211931-383","timestamp":"2026-05-19T04:00:11.931Z","scene":"office","intent":"equipment_status","note":"Observed abnormal noise from compressor; vibration apparent."}
+{"id":"synth-1779163211931-384","timestamp":"2026-05-19T04:00:11.931Z","scene":"warehouse","intent":"general_observation","note":"General observation: minor condition near pump."}
+{"id":"synth-1779163211932-385","timestamp":"2026-05-19T04:00:11.932Z","scene":"lab","intent":"general_observation","note":"General observation: intermittent condition near compressor."}
+{"id":"synth-1779163211932-386","timestamp":"2026-05-19T04:00:11.932Z","scene":"lab","intent":"visibility_issue","note":"Lighting insufficient in aisle 4; visibility reduced. Occurred at 2026-05-19T04:00:11.932Z."}
+{"id":"synth-1779163211932-387","timestamp":"2026-05-19T04:00:11.932Z","scene":"workshop","intent":"equipment_status","note":"Observed abnormal noise from grinder; vibration apparent."}
+{"id":"synth-1779163211932-388","timestamp":"2026-05-19T04:00:11.932Z","scene":"workshop","intent":"clarify_context","note":"Please verify the condition of the conveyor at station 3."}
+{"id":"synth-1779163211932-389","timestamp":"2026-05-19T04:00:11.932Z","scene":"warehouse","intent":"chemical_safety","note":"Detected unknown container labeled \"chemical\" with potential fumes. See attached photo."}
+{"id":"synth-1779163211951-390","timestamp":"2026-05-19T04:00:11.951Z","scene":"warehouse","intent":"housekeeping","note":"Debris and clutter around workspace; trip hazard."}
+{"id":"synth-1779163211951-391","timestamp":"2026-05-19T04:00:11.951Z","scene":"factory","intent":"immediate_action","note":"Urgent: leak near the panel."}
+{"id":"synth-1779163211951-392","timestamp":"2026-05-19T04:00:11.951Z","scene":"outdoor","intent":"ppe_review","note":"Workers missing gloves and goggles near pump. Occurred at 2026-05-19T04:00:11.951Z."}
+{"id":"synth-1779163211951-393","timestamp":"2026-05-19T04:00:11.951Z","scene":"lab","intent":"equipment_status","note":"Observed abnormal noise from grinder; vibration apparent."}
+{"id":"synth-1779163211951-394","timestamp":"2026-05-19T04:00:11.951Z","scene":"factory","intent":"immediate_action","note":"Urgent: exposed wire near the motor."}
+{"id":"synth-1779163211951-395","timestamp":"2026-05-19T04:00:11.951Z","scene":"factory","intent":"immediate_action","note":"Urgent: missing PPE near the motor."}
+{"id":"synth-1779163211951-396","timestamp":"2026-05-19T04:00:11.951Z","scene":"unknown","intent":"general_observation","note":"General observation: persistent condition near compressor."}
+{"id":"synth-1779163211951-397","timestamp":"2026-05-19T04:00:11.951Z","scene":"office","intent":"scene_hint","note":"Routine check in office area shows signs of wear. See attached photo."}
+{"id":"synth-1779163211951-398","timestamp":"2026-05-19T04:00:11.951Z","scene":"workshop","intent":"equipment_status","note":"Observed abnormal noise from compressor; vibration apparent."}
+{"id":"synth-1779163211951-399","timestamp":"2026-05-19T04:00:11.951Z","scene":"lab","intent":"clarify_context","note":"Please verify the condition of the forklift at station 3."}

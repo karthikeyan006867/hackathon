@@ -194,31 +194,96 @@ function classifyUrgency(text: string): NoteUrgency {
 }
 
 // Intent classification using pattern matching
+// Tokenize and normalize text into tokens and bigrams
+function tokenize(text: string): string[] {
+  const stopwords = new Set([
+    "the",
+    "and",
+    "a",
+    "an",
+    "of",
+    "in",
+    "on",
+    "for",
+    "to",
+    "with",
+    "is",
+    "are",
+    "was",
+    "were",
+    "be",
+    "by",
+    "that",
+    "this",
+  ]);
+
+  const cleaned = text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const words = cleaned.split(" ").filter((w) => w && !stopwords.has(w));
+
+  // generate bigrams to capture short phrases
+  const bigrams: string[] = [];
+  for (let i = 0; i < words.length - 1; i++) {
+    bigrams.push(`${words[i]} ${words[i + 1]}`);
+  }
+
+  return [...words, ...bigrams];
+}
+
+// Lightweight synonyms map to increase recall
+const SYNONYMS: Record<string, string[]> = {
+  urgent: ["asap", "immediately", "now", "critical"],
+  inspect: ["check", "verify", "review", "examine"],
+  equipment: ["machine", "motor", "device", "tool"],
+  chemical: ["msds", "toxic", "flammable"],
+};
+
+// Allow online updates to intent weights (simple additive update)
+export function onlineAdjustIntentWeight(intent: NoteIntent, token: string, delta = 0.1) {
+  const pattern = COMMERCIAL_INTENT_PATTERNS[intent];
+  if (!pattern) return;
+  // if token exists, slightly increase weight, otherwise add as new keyword
+  const idx = pattern.keywords.indexOf(token);
+  if (idx >= 0) {
+    pattern.weight = Math.min(5, pattern.weight + delta);
+  } else {
+    pattern.keywords.push(token);
+    pattern.weight = Math.min(5, pattern.weight + delta);
+  }
+}
+
 function classifyIntent(text: string): NoteIntent {
-  const lower = text.toLowerCase();
+  const tokens = tokenize(text);
   const scores: Record<NoteIntent, number> = {} as Record<NoteIntent, number>;
 
-  // Initialize scores
   for (const intent of Object.keys(COMMERCIAL_INTENT_PATTERNS) as NoteIntent[]) {
     scores[intent] = 0;
   }
 
-  // Calculate scores
-  for (const [intent, pattern] of Object.entries(COMMERCIAL_INTENT_PATTERNS)) {
-    const intentKey = intent as NoteIntent;
-    for (const keyword of pattern.keywords) {
-      const regex = new RegExp(`\\b${keyword}\\b`, "gi");
-      const matches = (text.match(regex) || []).length;
-      scores[intentKey] += matches * pattern.weight;
+  for (const [intentKey, pattern] of Object.entries(COMMERCIAL_INTENT_PATTERNS)) {
+    const intent = intentKey as NoteIntent;
+    const kws = pattern.keywords.slice();
+
+    // expand with synonyms
+    for (const kw of pattern.keywords) {
+      if (SYNONYMS[kw]) kws.push(...SYNONYMS[kw]);
+    }
+
+    for (const token of tokens) {
+      // exact match
+      if (kws.includes(token)) scores[intent] += 1 * pattern.weight;
+      // partial contains (for short tokens) boost slightly
+      else if (kws.some((k) => k.includes(token) || token.includes(k))) scores[intent] += 0.4 * pattern.weight;
     }
   }
 
-  // Get highest scoring intent
-  const topIntent = Object.entries(scores).reduce((prev, current) =>
-    current[1] > prev[1] ? current : prev
-  )[0] as NoteIntent;
-
-  return topIntent || "general_observation";
+  // pick highest scoring intent; fallback to general_observation
+  const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+  return (top && (top[0] as NoteIntent)) || "general_observation";
 }
 
 // Extract entities using commercial NLP patterns
