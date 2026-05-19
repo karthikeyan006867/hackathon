@@ -48,6 +48,7 @@ export type NoteAnalysis = {
   reasoningTrail?: string[];
   ambiguityScore?: number;
   inferredPriority?: number;
+  confidenceScore?: number;
   summary: string;
   sceneHint?: "general" | "unknown" | "workshop" | "lab" | "factory" | "warehouse" | "office" | "outdoor";
   shouldEscalate: boolean;

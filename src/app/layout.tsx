@@ -15,7 +15,7 @@ const bodyFont = Space_Grotesk({
 export const metadata: Metadata = {
   title: "SafeSphere AI | Intelligent Industrial Safety Auditor",
   description:
-    "Gemini-powered multimodal workspace safety, hazard, and compliance dashboard with structured JSON analysis.",
+    "ANN-powered multimodal workspace safety, hazard, and compliance dashboard with structured JSON analysis.",
 };
 
 export default function RootLayout({
